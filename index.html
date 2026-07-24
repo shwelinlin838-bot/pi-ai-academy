@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,73 +7,71 @@
     <!-- Pi SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f5f5f5; }
-        .card { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        button { background-color: #8a2be2; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        .status { margin-top: 15px; font-weight: bold; color: #555; }
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #4A148C; }
+        .user-box { background: #ede7f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .card { background: #fafafa; border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: left; }
+        .card h3 { color: #673AB7; margin-top: 0; }
+        button { background: #7B1FA2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #4A148C; }
     </style>
 </head>
 <body>
-    <div class="card">
+
+    <div class="container">
         <h1>🎓 Pi AI Academy</h1>
-        <p>Learn AI skills step-by-step in the Pi Ecosystem</p>
-        
-        <div id="auth-section">
-            <button id="login-btn" onclick="handleAuth()">Sign in with Pi</button>
+        <p>ကြိုဆိုပါတယ်အန်ကယ်! ဤအက်ပ်မှတစ်ဆင့် Pi Network နှင့် AI ပညာရပ်များကို လွယ်ကူစွာ လေ့လာနိုင်ပါသည်။</p>
+
+        <!-- Login Status Box -->
+        <div class="user-box" id="auth-status">
+            <p>အကောင့်ဝင်ရောက်ရန် စောင့်ဆိုင်းနေပါသည်...</p>
         </div>
+
+        <hr>
+
+        <!-- Educational Content (Copyright-Free & Beneficial) -->
+        <h2>📖 လေ့လာစရာ အကြောင်းအရာများ</h2>
         
-        <div id="status" class="status">Initializing...</div>
+        <div class="card">
+            <h3>၁။ Pi Network အခြေခံ လမ်းညွှန်</h3>
+            <p>Pi Network ၏ လုပ်ဆောင်ချက်များနှင့် လုံခြုံရေးဆိုင်ရာ သိကောင်းစရာများကို ဤနေရာတွင် လေ့လာနိုင်ပါသည်။</p>
+        </div>
+
+        <div class="card">
+            <h3>၂။ AI နှင့် Prompt Engineering အခြေခံ</h3>
+            <p>Artificial Intelligence (AI) ကို မိမိတို့၏ လုပ်ငန်းခွင်နှင့် နေ့စဉ်ဘဝတွင် ထိရောက်စွာ အသုံးချနည်းများ။</p>
+        </div>
+
+        <div class="card">
+            <h3>၃။ Pi Payments (နောင်လာမည့် အစီအစဉ်)</h3>
+            <p>Pi Coin ဖြင့် ပရီမီယံသင်ခန်းစာများနှင့် အထူးဝန်ဆောင်မှုများကို ဝယ်ယူနိုင်မည့်စနစ် မကြာမီ ထည့်သွင်းပေးမည်။</p>
+        </div>
     </div>
 
     <script>
-        let isAuthenticating = false;
-
-        async function initAndAuth() {
-            if (isAuthenticating) return;
-            isAuthenticating = true;
+        // Pi SDK Initialization and Auth
+        if (typeof Pi !== 'undefined') {
+            Pi.init({ version: "2.0", sandbox: true });
             
-            const statusEl = document.getElementById('status');
-            const loginBtn = document.getElementById('login-btn');
-            
-            try {
-                statusEl.textContent = "Connecting to Pi Network...";
-                if (loginBtn) loginBtn.disabled = true;
-
-                // Treat Pi.init as a Promise and await it fully
-                await Pi.init({ version: "2.0", sandbox: true });
-
-                const scopes = ['username'];
-                const onIncompletePaymentFound = (payment) => {};
-
-                // Authenticate with Pi SDK using username scope
-                const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
-
-                const username = authResult.user ? authResult.user.username : 'Pioneer';
-                
-                document.getElementById('auth-section').innerHTML = `
-                    <h2>Welcome, ${username}! 👋</h2>
-                    <p style="color: #2e7d32; font-weight: bold;">✓ Logged in via Pi Network</p>
-                `;
-                statusEl.textContent = "Successfully authenticated!";
-
-            } catch (err) {
-                console.error("Pi Auth Error:", err);
-                statusEl.textContent = "Authentication failed. Click button to retry.";
-                if (loginBtn) loginBtn.disabled = false;
-            } finally {
-                isAuthenticating = false;
+            const scopes = ['username', 'payments'];
+            function onIncompletePaymentFound(payment) {
+                console.log("Incomplete payment found", payment);
             }
-        }
 
-        function handleAuth() {
-            initAndAuth();
+            Pi.authenticate(scopes, onIncompletePaymentFound).then(auth => {
+                document.getElementById('auth-status').innerHTML = `
+                    <p>✅ <b>ကြိုဆိုပါတယ်၊ ${auth.user.username}!</b></p>
+                    <p style="color: green; font-size: 14px;">Pi Network ဖြင့် အောင်မြင်စွာ ဝင်ရောက်ထားပါသည်။</p>
+                `;
+            }).catch(error => {
+                console.error(error);
+                document.getElementById('auth-status').innerHTML = `<p style="color: red;">အကောင့်ဝင်ရောက်မှု မအောင်မြင်ပါ။ Pi Browser ဖြင့် ဝင်ကြည့်ပါ။</p>`;
+            });
+        } else {
+            document.getElementById('auth-status').innerHTML = `<p style="color: orange;">Pi SDK မတွေ့ရှိပါ။ ကျေးဇူးပြု၍ Pi Browser ဖြင့် ဖွင့်ပါ။</p>`;
         }
-
-        // Trigger Pi authentication automatically when page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            initAndAuth();
-        });
     </script>
+
 </body>
 </html>
