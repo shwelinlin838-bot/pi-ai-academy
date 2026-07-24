@@ -8,34 +8,72 @@
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f5f5f5; }
-        .card { background: white; padding: 20px; border-radius: 12px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #5a2e82; }
-        button { background-color: #8a2be2; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+        .card { background: white; padding: 25px; border-radius: 12px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button { background-color: #8a2be2; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .status { margin-top: 15px; font-weight: bold; color: #555; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>Welcome to Pi AI Academy</h1>
-        <p>Learn AI Skills inside the Pi Ecosystem for Free!</p>
-        <div id="user-info">
-            <button onclick="authPi()">Sign in with Pi</button>
+        <h1>🎓 Pi AI Academy</h1>
+        <p>Learn AI skills step-by-step in the Pi Ecosystem</p>
+        
+        <div id="auth-section">
+            <button id="login-btn" onclick="handleAuth()">Sign in with Pi</button>
         </div>
+        
+        <div id="status" class="status">Initializing...</div>
     </div>
 
     <script>
-        const Pi = window.Pi;
-        Pi.init({ version: "2.0", sandbox: true });
+        let isAuthenticating = false;
 
-        function authPi() {
-            const scopes = ['username'];
-            function onIncompletePaymentFound(payment) { };
+        async function initAndAuth() {
+            if (isAuthenticating) return;
+            isAuthenticating = true;
+            
+            const statusEl = document.getElementById('status');
+            const loginBtn = document.getElementById('login-btn');
+            
+            try {
+                statusEl.textContent = "Connecting to Pi Network...";
+                if (loginBtn) loginBtn.disabled = true;
 
-            Pi.authenticate(scopes, onIncompletePaymentFound).then(function(auth) {
-                document.getElementById('user-info').innerHTML = `<h3>Hello, ${auth.user.username}! 👋</h3><p>Welcome to AI Academy.</p>`;
-            }).catch(function(error) {
-                console.error(error);
-            });
+                // Treat Pi.init as a Promise and await it fully
+                await Pi.init({ version: "2.0", sandbox: true });
+
+                const scopes = ['username'];
+                const onIncompletePaymentFound = (payment) => {};
+
+                // Authenticate with Pi SDK using username scope
+                const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
+
+                const username = authResult.user ? authResult.user.username : 'Pioneer';
+                
+                document.getElementById('auth-section').innerHTML = `
+                    <h2>Welcome, ${username}! 👋</h2>
+                    <p style="color: #2e7d32; font-weight: bold;">✓ Logged in via Pi Network</p>
+                `;
+                statusEl.textContent = "Successfully authenticated!";
+
+            } catch (err) {
+                console.error("Pi Auth Error:", err);
+                statusEl.textContent = "Authentication failed. Click button to retry.";
+                if (loginBtn) loginBtn.disabled = false;
+            } finally {
+                isAuthenticating = false;
+            }
         }
+
+        function handleAuth() {
+            initAndAuth();
+        }
+
+        // Trigger Pi authentication automatically when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            initAndAuth();
+        });
     </script>
 </body>
 </html>
