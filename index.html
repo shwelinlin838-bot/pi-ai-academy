@@ -13,39 +13,42 @@
         .user-box { background: #ede7f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .card { background: #fafafa; border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: left; }
         .card h3 { color: #673AB7; margin-top: 0; }
-        button { background: #7B1FA2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        button { background: #7B1FA2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
         button:hover { background: #4A148C; }
+        .pay-btn { background: #2E7D32; }
+        .pay-btn:hover { background: #1B5E20; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>🎓 Pi AI Academy</h1>
-        <p>ကြိုဆိုပါတယ်အန်ကယ်! ဤအက်ပ်မှတစ်ဆင့် Pi Network နှင့် AI ပညာရပ်များကို လွယ်ကူစွာ လေ့လာနိုင်ပါသည်။</p>
+        <p>Learn AI skills step-by-step in the Pi Ecosystem</p>
 
         <!-- Login Status Box -->
         <div class="user-box" id="auth-status">
-            <p>အကောင့်ဝင်ရောက်ရန် စောင့်ဆိုင်းနေပါသည်...</p>
+            <p>အကောင့်ဝင်ရောက်နေပါသည်...</p>
         </div>
 
         <hr>
 
-        <!-- Educational Content (Copyright-Free & Beneficial) -->
-        <h2>📖 လေ့လာစရာ အကြောင်းအရာများ</h2>
+        <!-- Educational Content -->
+        <h2>📖 လေ့လာစရာ သင်ခန်းစာများ</h2>
         
         <div class="card">
             <h3>၁။ Pi Network အခြေခံ လမ်းညွှန်</h3>
-            <p>Pi Network ၏ လုပ်ဆောင်ချက်များနှင့် လုံခြုံရေးဆိုင်ရာ သိကောင်းစရာများကို ဤနေရာတွင် လေ့လာနိုင်ပါသည်။</p>
+            <p>Pi Network ၏ လုပ်ဆောင်ချက်များနှင့် လုံခြုံရေးဆိုင်ရာ သိကောင်းစရာများ။</p>
         </div>
 
         <div class="card">
             <h3>၂။ AI နှင့် Prompt Engineering အခြေခံ</h3>
-            <p>Artificial Intelligence (AI) ကို မိမိတို့၏ လုပ်ငန်းခွင်နှင့် နေ့စဉ်ဘဝတွင် ထိရောက်စွာ အသုံးချနည်းများ။</p>
+            <p>Artificial Intelligence ကို နေ့စဉ်ဘဝနှင့် လုပ်ငန်းခွင်တွင် ထိရောက်စွာ အသုံးချနည်း။</p>
         </div>
 
         <div class="card">
-            <h3>၃။ Pi Payments (နောင်လာမည့် အစီအစဉ်)</h3>
-            <p>Pi Coin ဖြင့် ပရီမီယံသင်ခန်းစာများနှင့် အထူးဝန်ဆောင်မှုများကို ဝယ်ယူနိုင်မည့်စနစ် မကြာမီ ထည့်သွင်းပေးမည်။</p>
+            <h3>၃။ VIP ပရီမီယံ သင်ခန်းစာ (Pi Payments)</h3>
+            <p>၁ Pi ဖြင့် ပရီမီယံသင်ခန်းစာများကို ဝယ်ယူလေ့လာနိုင်ပါသည်။</p>
+            <button class="pay-btn" onclick="buyVipContent()">🛒 ၁ Pi ဖြင့် ဝယ်ယူမည်</button>
         </div>
     </div>
 
@@ -61,15 +64,41 @@
 
             Pi.authenticate(scopes, onIncompletePaymentFound).then(auth => {
                 document.getElementById('auth-status').innerHTML = `
-                    <p>✅ <b>ကြိုဆိုပါတယ်၊ ${auth.user.username}!</b></p>
-                    <p style="color: green; font-size: 14px;">Pi Network ဖြင့် အောင်မြင်စွာ ဝင်ရောက်ထားပါသည်။</p>
+                    <p>✅ <b>Welcome, ${auth.user.username}!</b></p>
+                    <p style="color: green; font-size: 14px;">Logged in via Pi Network</p>
                 `;
             }).catch(error => {
                 console.error(error);
-                document.getElementById('auth-status').innerHTML = `<p style="color: red;">အကောင့်ဝင်ရောက်မှု မအောင်မြင်ပါ။ Pi Browser ဖြင့် ဝင်ကြည့်ပါ။</p>`;
+                document.getElementById('auth-status').innerHTML = `<p style="color: red;">Authentication failed.</p>`;
             });
-        } else {
-            document.getElementById('auth-status').innerHTML = `<p style="color: orange;">Pi SDK မတွေ့ရှိပါ။ ကျေးဇူးပြု၍ Pi Browser ဖြင့် ဖွင့်ပါ။</p>`;
+        }
+
+        // Pi Payments Function
+        function buyVipContent() {
+            const paymentData = {
+                amount: 1,
+                memo: "Pi AI Academy - VIP Course Access",
+                metadata: { courseId: "vip_ai_course_01" },
+            };
+
+            const callbacks = {
+                onReadyForServerApproval: function(paymentId) {
+                    alert("Payment created, ready for approval: " + paymentId);
+                },
+                onReadyForServerCompletion: function(paymentId, txid) {
+                    alert("Payment completed successfully! TXID: " + txid);
+                },
+                onCancel: function(paymentId) {
+                    alert("Payment was cancelled.");
+                },
+                onError: function(error, payment) {
+                    alert("Payment error: " + error.message);
+                }
+            };
+
+            Pi.createPayment(paymentData, callbacks).catch(function(error) {
+                alert("Error launching payment: " + error.message);
+            });
         }
     </script>
 
