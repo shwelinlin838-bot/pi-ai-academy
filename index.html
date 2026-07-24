@@ -7,16 +7,14 @@
     <!-- Pi SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; text-align: center; }
+        body { font-family: sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         h1 { color: #4A148C; }
         .user-box { background: #ede7f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .card { background: #fafafa; border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: left; }
         .card h3 { color: #673AB7; margin-top: 0; }
         button { background: #7B1FA2; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background: #4A148C; }
         .pay-btn { background: #2E7D32; }
-        .pay-btn:hover { background: #1B5E20; }
     </style>
 </head>
 <body>
@@ -53,7 +51,6 @@
     </div>
 
     <script>
-        // Pi SDK Initialization and Auth
         if (typeof Pi !== 'undefined') {
             Pi.init({ version: "2.0", sandbox: true });
             
@@ -65,7 +62,7 @@
             Pi.authenticate(scopes, onIncompletePaymentFound).then(auth => {
                 document.getElementById('auth-status').innerHTML = `
                     <p>✅ <b>Welcome, ${auth.user.username}!</b></p>
-                    <p style="color: green; font-size: 14px;">Logged in via Pi Network</p>
+                    <p style="color: green; font-size: 14px;">Logged in via Pi Network & Ready for Payments</p>
                 `;
             }).catch(error => {
                 console.error(error);
@@ -73,7 +70,6 @@
             });
         }
 
-        // Pi Payments Function
         function buyVipContent() {
             const paymentData = {
                 amount: 1,
